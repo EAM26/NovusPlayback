@@ -34,7 +34,7 @@ public class RtspUrlBuilder {
             String streamType
     ) {
         return "rtsp://" +
-                encode(username) + ":" + encode(password) + "@" +
+//                encode(username) + ":" + encode(password) + "@" +
                 host + ":" + port +
                 "/chTD=" + camera +
                 "&date=" + date +
