@@ -5,6 +5,7 @@ import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.dto.RtspResponse;
 import org.eamcode.novusplayback.dto.StreamType;
 import org.eamcode.novusplayback.service.RtspUrlBuilder;
+import org.eamcode.novusplayback.util.NovusTimeFormatter;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +28,11 @@ public class RtspUrlController {
         String streamType = (req.streamType() == null ? StreamType.MAIN.toString() : req.streamType())
                 .toLowerCase(Locale.ROOT);
         int timeLen = (req.timeLen() == null ? 60 : req.timeLen());
+        String time = NovusTimeFormatter.formatNovusTime(req.time());
         String url = builder.build(
                 req.camera(),
                 req.date().toString(),
-                req.startTime().withNano(0).toString(),
+                time,
                 timeLen,
                 streamType
 

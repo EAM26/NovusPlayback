@@ -38,7 +38,7 @@ public class RtspUrlBuilder {
                 host + ":" + port +
                 "/chTD=" + camera +
                 "&date=" + date +
-                "&startTime=" + time +
+                "&time=" + time +
                 "&timelen=" + timeLen +
                 "[streamType=" + streamType + "]";
     }

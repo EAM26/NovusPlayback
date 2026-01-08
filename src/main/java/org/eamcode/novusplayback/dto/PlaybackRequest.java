@@ -10,7 +10,7 @@ import java.time.LocalTime;
 public record PlaybackRequest(
         @Min(1) int camera,
         @NotNull LocalDate date,
-        @NotNull LocalTime startTime,
+        @NotNull LocalTime time,
         @Min(1) @Max(300) Integer timeLen,
         String streamType
 ) {
