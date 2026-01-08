@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Locale;
+
 @RestController
 @RequestMapping("/api")
 public class RtspUrlController {
@@ -22,8 +24,9 @@ public class RtspUrlController {
 
     @PostMapping("/rtsp-url")
     public RtspResponse build(@Valid @RequestBody PlaybackRequest req) {
-        String streamType = (req.streamType() == null ? StreamType.MAIN.toString() : req.streamType());
-        Integer timeLen = (req.timeLen() == null ? 60 : req.timeLen());
+        String streamType = (req.streamType() == null ? StreamType.MAIN.toString() : req.streamType())
+                .toLowerCase(Locale.ROOT);
+        int timeLen = (req.timeLen() == null ? 60 : req.timeLen());
         String url = builder.build(
                 req.camera(),
                 req.date().toString(),

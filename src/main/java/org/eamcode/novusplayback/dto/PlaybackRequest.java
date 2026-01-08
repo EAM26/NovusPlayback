@@ -11,7 +11,7 @@ public record PlaybackRequest(
         @Min(1) int camera,
         @NotNull LocalDate date,
         @NotNull LocalTime startTime,
-        @Min(1) @Max(3000) Integer timeLen,
+        @Min(1) @Max(300) Integer timeLen,
         String streamType
 ) {
 }

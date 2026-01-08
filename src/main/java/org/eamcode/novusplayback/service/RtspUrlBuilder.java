@@ -9,10 +9,10 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class RtspUrlBuilder {
 
-    private String host;
-    private int port;
-    private String username;
-    private String password;
+    private final String host;
+    private final int port;
+    private final String username;
+    private final String password;
 
     public RtspUrlBuilder(
             @Value("${NOVUS_HOST}") String host,
@@ -34,7 +34,7 @@ public class RtspUrlBuilder {
             String streamType
     ) {
         return "rtsp://" +
-//                encode(username) + ":" + encode(password) + "@" +
+                encode(username) + ":" + encode(password) + "@" +
                 host + ":" + port +
                 "/chTD=" + camera +
                 "&date=" + date +
