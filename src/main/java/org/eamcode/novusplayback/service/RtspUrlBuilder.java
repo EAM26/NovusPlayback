@@ -40,7 +40,7 @@ public class RtspUrlBuilder {
                 "&date=" + date +
                 "&time=" + time +
                 "&timelen=" + timeLen +
-                "[streamType=" + streamType + "]";
+                "&streamType=" + streamType;
     }
 
     public String getHost() {
