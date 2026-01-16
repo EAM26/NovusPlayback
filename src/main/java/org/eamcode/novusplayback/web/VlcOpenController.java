@@ -4,30 +4,28 @@ import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.dto.RtspResponse;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.*;
 import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api")
 public class VlcOpenController {
 
-    private final RtspUrlController rtspUrlController;
+    private final RtspController rtspController;
 
-    public VlcOpenController(RtspUrlController rtspUrlController) {
-        this.rtspUrlController = rtspUrlController;
+    public VlcOpenController(RtspController rtspController) {
+        this.rtspController = rtspController;
     }
 
     @GetMapping(value = "/open-vlc.m3u", produces = "audio/x-mpegurl")
     public ResponseEntity<byte[]> openVlcM3u(@Valid @ModelAttribute PlaybackRequest request) {
 
-        RtspResponse response = rtspUrlController.build(request);
+        RtspResponse response = rtspController.build(request);
 
         // Dutch comments: jouw bestaande RtspResponse accessor
         String rtspUrl = response.rtspUrl();

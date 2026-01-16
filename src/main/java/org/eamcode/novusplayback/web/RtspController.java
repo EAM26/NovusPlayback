@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.dto.RtspResponse;
 import org.eamcode.novusplayback.dto.StreamType;
+import org.eamcode.novusplayback.service.RtspService;
 import org.eamcode.novusplayback.service.RtspUrlBuilder;
 import org.eamcode.novusplayback.util.NovusTimeFormatter;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,28 +16,17 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/api")
-public class RtspUrlController {
+public class RtspController {
 
-    private final RtspUrlBuilder builder;
+    private final RtspService rtspService;
 
-    public RtspUrlController(RtspUrlBuilder builder) {
-        this.builder = builder;
+    public RtspController(RtspService rtspService) {
+        this.rtspService = rtspService;
     }
 
     @PostMapping("/rtsp-url")
     public RtspResponse build(@Valid @RequestBody PlaybackRequest req) {
-        String streamType = (req.streamType() == null ? StreamType.MAIN.toString() : req.streamType())
-                .toLowerCase(Locale.ROOT);
-        int timeLen = (req.timeLen() == null ? 60 : req.timeLen());
-        String time = NovusTimeFormatter.formatNovusTime(req.time());
-        String url = builder.build(
-                req.camera(),
-                req.date().toString(),
-                time,
-                timeLen,
-                streamType
-
-                );
-        return new RtspResponse(url);
+        return new RtspResponse(rtspService.buildRtspUrl(req));
     }
+
 }

@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.dto.RtspResponse;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,15 +16,15 @@ import java.util.List;
 @RestController
 public class ClipController {
 
-    private final RtspUrlController rtspUrlController;
+    private final RtspController rtspController;
 
-    public ClipController(RtspUrlController rtspUrlController) {
-        this.rtspUrlController = rtspUrlController;
+    public ClipController(RtspController rtspController) {
+        this.rtspController = rtspController;
     }
 
     @GetMapping(value = "/api/clip.mp4", produces = "video/mp4")
     public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response) throws Exception {
-        RtspResponse rtspResponse = rtspUrlController.build(request);
+        RtspResponse rtspResponse = rtspController.build(request);
         String rtspUrl = rtspResponse.rtspUrl();
 
         String fileName = makeFileName(request);
