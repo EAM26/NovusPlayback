@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Playback MVP</title>
+</head>
+<body style="font-family: sans-serif; padding: 16px;">
+<h3>Playback MVP (browser)</h3>
+
+<form id="f" style="display: grid; gap: 8px; max-width: 420px;">
+    <label>
+        Camera
+        <input name="camera" type="number" required min="1" th:value="${form.camera}">
+    </label>
+
+    <label>
+        Date
+        <input name="date" type="date" required th:value="${form.date}">
+    </label>
+
+    <label>
+        Time
+        <input name="time" type="time" step="1" required th:value="${form.time}">
+    </label>
+
+    <label>
+        TimeLen (sec)
+        <input name="timeLen" type="number" min="1" max="300" required th:value="${form.timeLen}">
+    </label>
+
+    <label>
+        StreamType
+        <input name="streamType" type="text" required th:value="${form.streamType}">
+    </label>
+
+    <button type="submit">Preview</button>
+</form>
+
+<div style="margin-top: 16px;">
+    <video id="v" controls style="width: 100%; max-width: 900px;"></video>
+</div>
+
+<script>
+    const form = document.getElementById("f");
+    const video = document.getElementById("v");
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const params = new URLSearchParams(new FormData(form));
+        video.src = "/api/clip.mp4?" + params.toString();
+        video.load();
+        video.play().catch(() => {});
+    });
+</script>
+
+</body>
+</html>
