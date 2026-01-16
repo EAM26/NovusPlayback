@@ -67,7 +67,7 @@ public class RtspService {
         return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
-    private int resolveTimeLen(PlaybackRequest req) {
+    public int resolveTimeLen(PlaybackRequest req) {
         Integer tl = req.timeLen();
         return (tl == null ? 60 : tl);
     }
