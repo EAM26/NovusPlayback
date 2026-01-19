@@ -27,9 +27,12 @@ public class ClipController {
     public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response) throws Exception {
         String rtspUrl = rtspService.buildRtspUrl(request);
 
+        boolean download = Boolean.TRUE.equals(request.download());
         String fileName = makeFileName(request);
+
         response.setContentType("video/mp4");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + ".mp4\"");
+        String disposition = download ? "attachment" : "inline";
+        response.setHeader("Content-Disposition",   disposition+ "; filename=\"" + fileName + ".mp4\"");
         response.setHeader("Cache-Control", "no-store");
 
         Process p = getProcess(request, rtspUrl);

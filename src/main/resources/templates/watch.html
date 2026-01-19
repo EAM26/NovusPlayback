@@ -32,8 +32,13 @@
         StreamType
         <input name="streamType" type="text" required th:value="${form.streamType}">
     </label>
+    <div id="dlStatus" style="margin-top: 8px; display:none;">
+        Downloading...
+    </div>
 
     <button type="submit">Preview</button>
+
+    <button type="button" id="downloadBtn">Download</button>
 </form>
 
 <div style="margin-top: 16px;">
@@ -43,6 +48,7 @@
 <script>
     const form = document.getElementById("f");
     const video = document.getElementById("v");
+    const downloadBtn = document.getElementById("downloadBtn");
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -51,6 +57,41 @@
         video.src = "/api/clip.mp4?" + params.toString();
         video.load();
         video.play().catch(() => {});
+    });
+
+    downloadBtn.addEventListener("click", () => {
+        const params = new URLSearchParams(new FormData(form));
+        params.set("download", "true"); // Nederlands: alleen de knop zet dit
+
+        const url = "/api/clip.mp4?" + params.toString();
+
+        // Nederlands: toon eenvoudige feedback (geen echte progress)
+        dlStatus.style.display = "block";
+        dlStatus.textContent = "Downloading...";
+
+        // Nederlands: start download via hidden iframe zodat je op dezelfde pagina blijft
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = url;
+
+        iframe.onload = () => {
+            // Nederlands: dit is niet perfect betrouwbaar, maar geeft iig “klaar/gestart” gevoel
+            dlStatus.textContent = "Download started.";
+            setTimeout(() => {
+                dlStatus.style.display = "none";
+                iframe.remove();
+            }, 1500);
+        };
+
+        iframe.onerror = () => {
+            dlStatus.textContent = "Download failed.";
+            setTimeout(() => {
+                dlStatus.style.display = "none";
+                iframe.remove();
+            }, 2500);
+        };
+
+        document.body.appendChild(iframe);
     });
 </script>
 
