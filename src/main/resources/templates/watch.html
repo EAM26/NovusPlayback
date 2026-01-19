@@ -3,19 +3,33 @@
 <head>
     <meta charset="utf-8">
     <title>Playback MVP</title>
-
     <style>
-        .dots::after {
-            content: "";
-            display: inline-block;
-            width: 1.2em;
-            text-align: left;
-            animation: dots 1s steps(4, end) infinite;
+        .download-banner {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 6px;
+
+            background-color: #e7f1ff;
+            color: #0b3d91;
+
+            font-weight: 600;
+            font-size: 1.05rem;
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .dots.paused::after {
-            animation: none;
+        .download-banner .icon {
+            font-size: 1.2rem;
+        }
+
+        .dots::after {
             content: "";
+            width: 1.2em;
+            animation: dots 1s steps(4, end) infinite;
         }
 
         @keyframes dots {
@@ -28,6 +42,32 @@
             100% { content: ""; }
         }
     </style>
+
+
+    <!--    <style>-->
+<!--        .dots::after {-->
+<!--            content: "";-->
+<!--            display: inline-block;-->
+<!--            width: 1.2em;-->
+<!--            text-align: left;-->
+<!--            animation: dots 1s steps(4, end) infinite;-->
+<!--        }-->
+
+<!--        .dots.paused::after {-->
+<!--            animation: none;-->
+<!--            content: "";-->
+<!--        }-->
+
+<!--        @keyframes dots {-->
+<!--            0%   { content: ""; }-->
+<!--            17%  { content: "."; }-->
+<!--            34%  { content: ".."; }-->
+<!--            51%  { content: "..."; }-->
+<!--            68%  { content: "...."; }-->
+<!--            85%  { content: "....."; }-->
+<!--            100% { content: ""; }-->
+<!--        }-->
+<!--    </style>-->
 </head>
 
 <body style="font-family: sans-serif; padding: 16px;">
@@ -59,9 +99,13 @@
         <input name="streamType" type="text" required th:value="${form.streamType}">
     </label>
 
-    <div id="dlStatus" style="margin-top: 8px; display:none;">
-        <span id="dlText">Downloading</span><span class="dots paused"></span>
+
+    <div id="dlStatus" class="download-banner" style="display:none;">
+        <span class="icon">⬇</span>
+        <span id="dlText">Downloading</span>
+        <span class="dots"></span>
     </div>
+
 
     <button type="submit">Preview</button>
     <button type="button" id="downloadBtn">Download</button>
@@ -80,7 +124,7 @@
     const dlText = document.getElementById("dlText");
     const dlDots = document.querySelector(".dots");
 
-    // PREVIEW (ongewijzigd)
+
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const params = new URLSearchParams(new FormData(form));
@@ -108,7 +152,6 @@
                 throw new Error("HTTP " + response.status);
             }
 
-            // hier weten we zeker: download-data is volledig binnen
             const blob = await response.blob();
 
             const disposition = response.headers.get("Content-Disposition") || "";

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.service.RtspService;
+import org.eamcode.novusplayback.util.NovusTimeFormatter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,9 +47,10 @@ public class ClipController {
     }
 
     private String makeFileName(PlaybackRequest request) {
-        return "clip-%s-%s-cam%d".formatted(
+        String timeAsString = NovusTimeFormatter.formatFileNameTime(request.time());
+        return "clip-%s_%s-cam%d".formatted(
                 request.date(),
-                request.time().toString().replace(":", "-"),
+                timeAsString,
                 request.camera()
         );
     }
