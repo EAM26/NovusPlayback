@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.service.RtspService;
+import org.eamcode.novusplayback.util.NovusTimeFormatter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +28,12 @@ public class ClipController {
     public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response) throws Exception {
         String rtspUrl = rtspService.buildRtspUrl(request);
 
+        boolean download = Boolean.TRUE.equals(request.download());
         String fileName = makeFileName(request);
+
         response.setContentType("video/mp4");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + ".mp4\"");
+        String disposition = download ? "attachment" : "inline";
+        response.setHeader("Content-Disposition",   disposition+ "; filename=\"" + fileName + ".mp4\"");
         response.setHeader("Cache-Control", "no-store");
 
         Process p = getProcess(request, rtspUrl);
@@ -43,9 +47,10 @@ public class ClipController {
     }
 
     private String makeFileName(PlaybackRequest request) {
-        return "clip-%s-%s-cam%d".formatted(
+        String timeAsString = NovusTimeFormatter.formatFileNameTime(request.time());
+        return "clip-%s_%s-cam%d".formatted(
                 request.date(),
-                request.time().toString().replace(":", "-"),
+                timeAsString,
                 request.camera()
         );
     }

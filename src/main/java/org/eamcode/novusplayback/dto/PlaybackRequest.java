@@ -8,10 +8,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record PlaybackRequest(
-        @Min(1) int camera,
+        @NotNull @Min(1) int camera,
         @NotNull LocalDate date,
         @NotNull LocalTime time,
         @Min(1) @Max(300) Integer timeLen,
-        String streamType
+        @NotNull String streamType,
+        Boolean download
+
 ) {
 }
