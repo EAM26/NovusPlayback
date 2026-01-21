@@ -31,4 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-/logs/app.log
+
+### Log ###
+/logs/novus-playback.log
