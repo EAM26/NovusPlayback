@@ -5,6 +5,8 @@ import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.service.RtspService;
 import org.eamcode.novusplayback.util.NovusTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ClipController {
 
     private final RtspService rtspService;
+    private static final Logger log = LoggerFactory.getLogger(ClipController.class);
 
     public ClipController(RtspService rtspService) {
         this.rtspService = rtspService;
@@ -29,6 +32,17 @@ public class ClipController {
         String rtspUrl = rtspService.buildRtspUrl(request);
 
         boolean download = Boolean.TRUE.equals(request.download());
+
+        log.info(
+                "Clip start: cam={}, date={}, time={}, timeLen={}, streamType={}, download={}",
+                request.camera(),
+                request.date(),
+                request.time(),
+                request.timeLen(),
+                request.streamType(),
+                download
+        );
+
         String fileName = makeFileName(request);
 
         response.setContentType("video/mp4");
