@@ -1,6 +1,5 @@
 package org.eamcode.novusplayback.web;
 
-import lombok.extern.slf4j.Slf4j;
 import org.eamcode.novusplayback.dto.StreamType;
 import org.eamcode.novusplayback.model.WatchForm;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import java.util.Locale;
 
 
 @Controller
-@Slf4j
 public class WatchPageController {
 
 
@@ -27,7 +25,6 @@ public class WatchPageController {
             @RequestParam(name = "streamType", required = false) String streamType,
             Model model
     ) {
-        log.info("Request to watch made by {}", "John");
         WatchForm form = new WatchForm();
         form.setCamera(camera == null ? 1 : camera);
         form.setDate(date == null ? LocalDate.now() : date);
