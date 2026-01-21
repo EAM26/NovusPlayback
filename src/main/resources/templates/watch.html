@@ -3,8 +3,9 @@
 <head>
     <meta charset="utf-8">
     <title>Playback MVP</title>
+
     <style>
-        .download-banner {
+        .banner {
             margin-top: 12px;
             padding: 10px 14px;
             border-radius: 6px;
@@ -22,52 +23,36 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .download-banner .icon {
+        .banner .icon {
             font-size: 1.2rem;
         }
 
-        .dots::after {
-            content: "";
-            width: 1.2em;
-            animation: dots 1s steps(4, end) infinite;
+        .dots {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 2px;
         }
 
-        @keyframes dots {
-            0%   { content: ""; }
-            17%  { content: "."; }
-            34%  { content: ".."; }
-            51%  { content: "..."; }
-            68%  { content: "...."; }
-            85%  { content: "....."; }
-            100% { content: ""; }
+        .dots span {
+            opacity: 0.2;
+            animation: blink 1s infinite;
+        }
+
+        .dots span:nth-child(2) { animation-delay: 0.2s; }
+        .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0%, 20% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        .dots.paused span {
+            animation: none;
+            opacity: 0.2;
         }
     </style>
 
-
-    <!--    <style>-->
-<!--        .dots::after {-->
-<!--            content: "";-->
-<!--            display: inline-block;-->
-<!--            width: 1.2em;-->
-<!--            text-align: left;-->
-<!--            animation: dots 1s steps(4, end) infinite;-->
-<!--        }-->
-
-<!--        .dots.paused::after {-->
-<!--            animation: none;-->
-<!--            content: "";-->
-<!--        }-->
-
-<!--        @keyframes dots {-->
-<!--            0%   { content: ""; }-->
-<!--            17%  { content: "."; }-->
-<!--            34%  { content: ".."; }-->
-<!--            51%  { content: "..."; }-->
-<!--            68%  { content: "...."; }-->
-<!--            85%  { content: "....."; }-->
-<!--            100% { content: ""; }-->
-<!--        }-->
-<!--    </style>-->
 </head>
 
 <body style="font-family: sans-serif; padding: 16px;">
@@ -99,16 +84,27 @@
         <input name="streamType" type="text" required th:value="${form.streamType}">
     </label>
 
-
-    <div id="dlStatus" class="download-banner" style="display:none;">
+    <!-- DOWNLOAD STATUS -->
+    <div id="dlStatus" class="banner" style="display:none;">
         <span class="icon">⬇</span>
         <span id="dlText">Downloading</span>
-        <span class="dots"></span>
-    </div>
 
+        <span id="dlDots" class="dots" aria-hidden="true">
+      <span>.</span><span>.</span><span>.</span>
+    </span>
+    </div>
 
     <button type="submit">Preview</button>
     <button type="button" id="downloadBtn">Download</button>
+    <button type="button" id="snapshotBtn">Take snapshot</button>
+
+    <!-- SNAPSHOT STATUS -->
+    <div id="snapStatus" class="banner" style="display:none;">
+        <span class="icon">📸</span>
+        <span id="snapText">Snapshot available</span>
+    </div>
+
+    <canvas id="snapCanvas" style="display:none;"></canvas>
 </form>
 
 <div style="margin-top: 16px;">
@@ -118,13 +114,39 @@
 <script>
     const form = document.getElementById("f");
     const video = document.getElementById("v");
+
     const downloadBtn = document.getElementById("downloadBtn");
+    const snapshotBtn = document.getElementById("snapshotBtn");
 
     const dlStatus = document.getElementById("dlStatus");
     const dlText = document.getElementById("dlText");
-    const dlDots = document.querySelector(".dots");
+    const dlDots = document.getElementById("dlDots");
 
+    const snapStatus = document.getElementById("snapStatus");
+    const snapText = document.getElementById("snapText");
 
+    const canvas = document.getElementById("snapCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
+        textEl.textContent = text;
+
+        bannerEl.style.display = "flex";
+
+        if (dotsEl) {
+            if (dotsRunning) {
+                dotsEl.classList.remove("paused");
+            } else {
+                dotsEl.classList.add("paused");
+            }
+        }
+
+        if (autoHideMs && autoHideMs > 0) {
+            setTimeout(() => { bannerEl.style.display = "none"; }, autoHideMs);
+        }
+    }
+
+    // PREVIEW
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const params = new URLSearchParams(new FormData(form));
@@ -140,10 +162,7 @@
 
         const url = "/api/clip.mp4?" + params.toString();
 
-        // UI: start
-        dlText.textContent = "Downloading";
-        dlDots.classList.remove("paused");
-        dlStatus.style.display = "block";
+        showBanner(dlStatus, dlText, "Downloading", dlDots, true, 0);
         downloadBtn.disabled = true;
 
         try {
@@ -167,18 +186,63 @@
             a.remove();
             URL.revokeObjectURL(objectUrl);
 
-            dlText.textContent = "Download finished";
-            dlDots.classList.add("paused");
-            setTimeout(() => dlStatus.style.display = "none", 1500);
+            showBanner(dlStatus, dlText, "Download started", dlDots, false, 1500);
 
         } catch (err) {
             console.error(err);
-            dlText.textContent = "Download failed";
-            dlDots.classList.add("paused");
-            setTimeout(() => dlStatus.style.display = "none", 2500);
+
+            showBanner(dlStatus, dlText, "Download failed", dlDots, false, 2500);
+
         } finally {
             downloadBtn.disabled = false;
         }
+    });
+
+    // SNAPSHOT
+    snapshotBtn.addEventListener("click", () => {
+        if (!video.src) {
+            showBanner(snapStatus, snapText, "No preview loaded", null, false, 1500);
+            return;
+        }
+
+        if (video.readyState < 2) {
+            showBanner(snapStatus, snapText, "Preview not ready yet", null, false, 1500);
+            return;
+        }
+
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+
+        if (!width || !height) {
+            showBanner(snapStatus, snapText, "No video frame available", null, false, 1500);
+            return;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(video, 0, 0, width, height);
+
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                showBanner(snapStatus, snapText, "Snapshot failed", null, false, 1500);
+                return;
+            }
+
+            const now = new Date();
+            const fileName = `snapshot-${now.toISOString().replaceAll(":", "-")}.png`;
+
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = objectUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(objectUrl);
+
+            showBanner(snapStatus, snapText, "Snapshot available", null, false, 1500);
+
+        }, "image/png");
     });
 </script>
 
