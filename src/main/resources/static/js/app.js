@@ -15,8 +15,6 @@ const snapText = document.getElementById("snapText");
 const canvas = document.getElementById("snapCanvas");
 const ctx = canvas.getContext("2d");
 
-let clipStartDateTime = null;
-
 function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
     textEl.textContent = text;
 
@@ -45,49 +43,37 @@ form.addEventListener("submit", (e) => {
     video.load();
     video.play().catch(() => {
     });
-    clipStartDateTime = new Date();
 });
 
+// Adjust Time buttons
 forward10Btn.addEventListener("click", async () => {
-    console.log("Forward button clicked");
-    // const params = new URLSearchParams(new FormData(form));
-    // const formData = Object.fromEntries(params.entries());
-    // const timestamp = new Date(formData.date + " " + formData.time);
-    // const delta = 10 * 1000;
-    // const timeButtonClicked = new Date();
-    // if(!clipStartDateTime) clipStartDateTime = new Date();
-    // console.log("start time: " + clipStartDateTime);
-    // console.log("clicked time: " + timeButtonClicked);
-    //
-    // const timePlayed = timeButtonClicked - clipStartDateTime;
-    // // clipStartDateTime = new Date();
-    // let result = new Date(timestamp.getTime() + delta + timePlayed);
-    //
-    // const correctedDate = formatDatetime(result);
-    //
-    // params.set("date", correctedDate[0]);
-    // params.set("time", correctedDate[1]);
-    //
-    // video.src = "/api/clip.mp4?" + params.toString();
-    // video.load();
-    // video.play().catch(() => {
-    //
-    //
-    //
-    // });
-    // console.log("start time: " + clipStartDateTime);
-    // console.log(correctedDate[0]);
-    // console.log(correctedDate[1]);
-
+    setStartTime(10);
 })
 
-// function formatDatetime(dateIso) {
-//     const offset = dateIso.getTimezoneOffset()
-//     const dateCorrected = new Date(dateIso.getTime() - (offset * 60 * 1000))
-//     const date = dateCorrected.toISOString().split('T')[0];
-//     const time = dateCorrected.toISOString().split('T')[1].substring(0, 8);
-//     return [date, time];
-// }
+function setStartTime(deltaTime) {
+    const form = document.getElementById('f');
+    const currentStartTime = new Date(
+        form.elements["date"].value + "T" + form.elements["time"].value
+    );
+    const shiftedStartTime =  calculateStartTime(currentStartTime, deltaTime);
+    // if(shiftedStartTime > new Date()) {return "Too late"}
+    form.elements["date"].value = shiftedStartTime[0];
+    form.elements["time"].value = shiftedStartTime[1];
+    form.requestSubmit();
+}
+
+
+function calculateStartTime(dateIso, deltaTime) {
+    const offset = dateIso.getTimezoneOffset()
+    let dateCorrected = new Date(dateIso.getTime() - (offset * 60 * 1000) + (deltaTime * 1000));
+    if (dateCorrected > new Date()) {
+        console.log("Time not available. Set to now");
+        dateCorrected = new Date();
+    }
+    const date = dateCorrected.toISOString().split('T')[0];
+    const time = dateCorrected.toISOString().split('T')[1].substring(0, 8);
+    return [date, time];
+}
 
 // DOWNLOAD
 downloadBtn.addEventListener("click", async () => {
