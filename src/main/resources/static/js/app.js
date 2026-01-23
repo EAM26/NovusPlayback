@@ -4,6 +4,12 @@ const video = document.getElementById("v");
 const downloadBtn = document.getElementById("downloadBtn");
 const snapshotBtn = document.getElementById("snapshotBtn");
 const forward10SecBtn = document.getElementById("forward10SecBtn");
+const forward1MinBtn = document.getElementById("forward1MinBtn");
+const forward5minBtn = document.getElementById("forward5minBtn");
+const backward10SedBtn = document.getElementById("backward10SedBtn");
+const backward1MinBtn = document.getElementById("backward1MinBtn");
+const backward5MinBtn = document.getElementById("backward5MinBtn");
+
 
 const dlStatus = document.getElementById("dlStatus");
 const dlText = document.getElementById("dlText");
@@ -14,6 +20,7 @@ const snapText = document.getElementById("snapText");
 
 const canvas = document.getElementById("snapCanvas");
 const ctx = canvas.getContext("2d");
+let timeStartLastPreview = null;
 
 function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
     textEl.textContent = text;
@@ -43,14 +50,22 @@ form.addEventListener("submit", (e) => {
     video.load();
     video.play().catch(() => {
     });
+    timeStartLastPreview = new Date();
+
 });
 
-// Adjust Time buttons
-// forward10Btn.addEventListener("click", async () => {
-//     setStartTime(10);
-// })
+
 
 forward10SecBtn.addEventListener("click", () => shiftFormTimeBySeconds(10));
+forward1MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(60));
+forward5minBtn.addEventListener("click", () => shiftFormTimeBySeconds(300));
+backward10SedBtn.addEventListener("click", () => shiftFormTimeBySeconds(-10));
+backward1MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(-60));
+backward5MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(-300));
+
+function throttleTime() {
+    return timeStartLastPreview.getTime() + 500 <= new Date();
+}
 
 function shiftFormTimeBySeconds(offsetSeconds) {
     const dateStr = form.elements["date"].value;
@@ -67,13 +82,22 @@ function shiftFormTimeBySeconds(offsetSeconds) {
 
     // Check time is not if future, set to now
     const now = new Date();
-    if (dt > now) dt.setTime(now.getTime());
+    if (dt < now) {
+        const pad2 = (n) => String(n).padStart(2, "0");
+        form.elements["date"].value = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
+        form.elements["time"].value = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}:${pad2(dt.getSeconds())}`;
+        // console.log(form.time);
+        if(throttleTime()) {
+            form.requestSubmit();
+        }
+        else {
+            console.log("too fast");
+        }
 
-    const pad2 = (n) => String(n).padStart(2, "0");
-    form.elements["date"].value = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
-    form.elements["time"].value = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}:${pad2(dt.getSeconds())}`;
-    console.log(form.time);
-    form.requestSubmit();
+    } else {
+        console.log("time can't be later than now");
+    }
+
 }
 
 // DOWNLOAD
