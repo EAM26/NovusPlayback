@@ -3,6 +3,7 @@ const video = document.getElementById("v");
 
 const downloadBtn = document.getElementById("downloadBtn");
 const snapshotBtn = document.getElementById("snapshotBtn");
+const forward10Btn = document.getElementById("forward10Btn");
 
 const dlStatus = document.getElementById("dlStatus");
 const dlText = document.getElementById("dlText");
@@ -13,6 +14,8 @@ const snapText = document.getElementById("snapText");
 
 const canvas = document.getElementById("snapCanvas");
 const ctx = canvas.getContext("2d");
+
+let clipStartDateTime = null;
 
 function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
     textEl.textContent = text;
@@ -28,7 +31,9 @@ function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
     }
 
     if (autoHideMs && autoHideMs > 0) {
-        setTimeout(() => { bannerEl.style.display = "none"; }, autoHideMs);
+        setTimeout(() => {
+            bannerEl.style.display = "none";
+        }, autoHideMs);
     }
 }
 
@@ -38,8 +43,51 @@ form.addEventListener("submit", (e) => {
     const params = new URLSearchParams(new FormData(form));
     video.src = "/api/clip.mp4?" + params.toString();
     video.load();
-    video.play().catch(() => {});
+    video.play().catch(() => {
+    });
+    clipStartDateTime = new Date();
 });
+
+forward10Btn.addEventListener("click", async () => {
+    console.log("Forward button clicked");
+    // const params = new URLSearchParams(new FormData(form));
+    // const formData = Object.fromEntries(params.entries());
+    // const timestamp = new Date(formData.date + " " + formData.time);
+    // const delta = 10 * 1000;
+    // const timeButtonClicked = new Date();
+    // if(!clipStartDateTime) clipStartDateTime = new Date();
+    // console.log("start time: " + clipStartDateTime);
+    // console.log("clicked time: " + timeButtonClicked);
+    //
+    // const timePlayed = timeButtonClicked - clipStartDateTime;
+    // // clipStartDateTime = new Date();
+    // let result = new Date(timestamp.getTime() + delta + timePlayed);
+    //
+    // const correctedDate = formatDatetime(result);
+    //
+    // params.set("date", correctedDate[0]);
+    // params.set("time", correctedDate[1]);
+    //
+    // video.src = "/api/clip.mp4?" + params.toString();
+    // video.load();
+    // video.play().catch(() => {
+    //
+    //
+    //
+    // });
+    // console.log("start time: " + clipStartDateTime);
+    // console.log(correctedDate[0]);
+    // console.log(correctedDate[1]);
+
+})
+
+// function formatDatetime(dateIso) {
+//     const offset = dateIso.getTimezoneOffset()
+//     const dateCorrected = new Date(dateIso.getTime() - (offset * 60 * 1000))
+//     const date = dateCorrected.toISOString().split('T')[0];
+//     const time = dateCorrected.toISOString().split('T')[1].substring(0, 8);
+//     return [date, time];
+// }
 
 // DOWNLOAD
 downloadBtn.addEventListener("click", async () => {
@@ -129,4 +177,7 @@ snapshotBtn.addEventListener("click", () => {
         showBanner(snapStatus, snapText, "Snapshot available", null, false, 1500);
 
     }, "image/png");
+
+//     FORWARD
+
 });

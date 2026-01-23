@@ -20,8 +20,8 @@ public class RtspService {
     private final String password;
 
     public RtspService(
-            @Value("${NOVUS_HOST}") String host,
-            @Value("${NOVUS_PORT}") int port,
+            @Value("${novus.host}") String host,
+            @Value("${novus.port}") int port,
             @Value("${NOVUS_USERNAME}") String username,
             @Value("${NOVUS_PASSWORD}") String password
     ) {
