@@ -3,13 +3,13 @@ const video = document.getElementById("v");
 
 const downloadBtn = document.getElementById("downloadBtn");
 const snapshotBtn = document.getElementById("snapshotBtn");
+
 const forward10SecBtn = document.getElementById("forward10SecBtn");
 const forward1MinBtn = document.getElementById("forward1MinBtn");
-const forward5minBtn = document.getElementById("forward5minBtn");
-const backward10SedBtn = document.getElementById("backward10SedBtn");
+const forward5MinBtn = document.getElementById("forward5MinBtn");
+const backward10SecBtn = document.getElementById("backward10SecBtn");
 const backward1MinBtn = document.getElementById("backward1MinBtn");
 const backward5MinBtn = document.getElementById("backward5MinBtn");
-
 
 const dlStatus = document.getElementById("dlStatus");
 const dlText = document.getElementById("dlText");
@@ -58,8 +58,8 @@ form.addEventListener("submit", (e) => {
 
 forward10SecBtn.addEventListener("click", () => shiftFormTimeBySeconds(10));
 forward1MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(60));
-forward5minBtn.addEventListener("click", () => shiftFormTimeBySeconds(300));
-backward10SedBtn.addEventListener("click", () => shiftFormTimeBySeconds(-10));
+forward5MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(300));
+backward10SecBtn.addEventListener("click", () => shiftFormTimeBySeconds(-10));
 backward1MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(-60));
 backward5MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(-300));
 

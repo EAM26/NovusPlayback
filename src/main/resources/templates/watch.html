@@ -2,7 +2,7 @@
 <html lang="nl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <script th:src="@{/js/app.js}" defer></script>
     <title>Novus Playback</title>
 
@@ -12,7 +12,7 @@
 <body style="font-family: sans-serif; padding: 16px;">
 <h3>Playback MVP (browser)</h3>
 
-<form id="f" style="display: grid; gap: 8px; max-width: 420px;">
+<form id="f">
     <label>
         Camera
         <input name="camera" type="number" required min="1" th:value="${form.camera}">
@@ -22,11 +22,20 @@
         Date
         <input name="date" type="date" required th:value="${form.date}">
     </label>
-
-    <label>
-        Time
-        <input name="time" type="time" step="1" required th:value="${form.time}">
-    </label>
+    <div class="time-row">
+        <label>
+            Time
+            <input name="time" type="time" step="1" required th:value="${form.time}">
+        </label>
+        <div class="time-shift">
+            <button type="button" id="backward5MinBtn">-5min</button>
+            <button type="button" id="backward1MinBtn">-1min</button>
+            <button type="button" id="backward10SecBtn">-10sec</button>
+            <button type="button" id="forward10SecBtn">+10sec</button>
+            <button type="button" id="forward1MinBtn">+1min</button>
+            <button type="button" id="forward5MinBtn">+5min</button>
+        </div>
+    </div>
 
     <label>
         Time Length (sec)
@@ -48,15 +57,12 @@
     </span>
     </div>
 
-    <button type="submit">Preview</button>
-    <button type="button" id="downloadBtn">Download</button>
-    <button type="button" id="snapshotBtn">Take snapshot</button>
-    <button type="button" id="forward10SecBtn">+10sec</button>
-    <button type="button" id="forward1MinBtn">+1min</button>
-    <button type="button" id="forward5minBtn">+5min</button>
-    <button type="button" id="backward10SedBtn">-10sec</button>
-    <button type="button" id="backward1MinBtn">-1min</button>
-    <button type="button" id="backward5MinBtn">-5min</button>
+    <div class="action-buttons">
+        <button type="submit">Preview</button>
+        <button type="button" id="downloadBtn">Download</button>
+        <button type="button" id="snapshotBtn">Take snapshot</button>
+    </div>
+
 
     <!-- SNAPSHOT STATUS -->
     <div id="snapStatus" class="banner" style="display:none;">
