@@ -2,78 +2,17 @@
 <html lang="nl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>Playback MVP</title>
-    <style>
-        .download-banner {
-            margin-top: 12px;
-            padding: 10px 14px;
-            border-radius: 6px;
-
-            background-color: #e7f1ff;
-            color: #0b3d91;
-
-            font-weight: 600;
-            font-size: 1.05rem;
-
-            display: flex;
-            align-items: center;
-            gap: 6px;
-
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .download-banner .icon {
-            font-size: 1.2rem;
-        }
-
-        .dots::after {
-            content: "";
-            width: 1.2em;
-            animation: dots 1s steps(4, end) infinite;
-        }
-
-        @keyframes dots {
-            0%   { content: ""; }
-            17%  { content: "."; }
-            34%  { content: ".."; }
-            51%  { content: "..."; }
-            68%  { content: "...."; }
-            85%  { content: "....."; }
-            100% { content: ""; }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+    <script th:src="@{/js/app.js}" defer></script>
+    <title>Novus Playback</title>
 
 
-    <!--    <style>-->
-<!--        .dots::after {-->
-<!--            content: "";-->
-<!--            display: inline-block;-->
-<!--            width: 1.2em;-->
-<!--            text-align: left;-->
-<!--            animation: dots 1s steps(4, end) infinite;-->
-<!--        }-->
-
-<!--        .dots.paused::after {-->
-<!--            animation: none;-->
-<!--            content: "";-->
-<!--        }-->
-
-<!--        @keyframes dots {-->
-<!--            0%   { content: ""; }-->
-<!--            17%  { content: "."; }-->
-<!--            34%  { content: ".."; }-->
-<!--            51%  { content: "..."; }-->
-<!--            68%  { content: "...."; }-->
-<!--            85%  { content: "....."; }-->
-<!--            100% { content: ""; }-->
-<!--        }-->
-<!--    </style>-->
 </head>
 
 <body style="font-family: sans-serif; padding: 16px;">
 <h3>Playback MVP (browser)</h3>
 
-<form id="f" style="display: grid; gap: 8px; max-width: 420px;">
+<form id="f">
     <label>
         Camera
         <input name="camera" type="number" required min="1" th:value="${form.camera}">
@@ -83,11 +22,21 @@
         Date
         <input name="date" type="date" required th:value="${form.date}">
     </label>
-
-    <label>
-        Time
-        <input name="time" type="time" step="1" required th:value="${form.time}">
-    </label>
+    <div class="time-row">
+        <label>
+            Time
+            <input name="time" type="time" step="1" required th:value="${form.time}">
+        </label>
+        <div class="time-shift">
+            <button type="button" id="backward5MinBtn">-5min</button>
+            <button type="button" id="backward1MinBtn">-1min</button>
+            <button type="button" id="backward10SecBtn">-10sec</button>
+            <button type="button" id="pauseBtn">Pause</button>
+            <button type="button" id="forward10SecBtn">+10sec</button>
+            <button type="button" id="forward1MinBtn">+1min</button>
+            <button type="button" id="forward5MinBtn">+5min</button>
+        </div>
+    </div>
 
     <label>
         Time Length (sec)
@@ -99,88 +48,35 @@
         <input name="streamType" type="text" required th:value="${form.streamType}">
     </label>
 
-
-    <div id="dlStatus" class="download-banner" style="display:none;">
+    <!-- DOWNLOAD STATUS -->
+    <div id="dlStatus" class="banner" style="display:none;">
         <span class="icon">⬇</span>
         <span id="dlText">Downloading</span>
-        <span class="dots"></span>
+
+        <span id="dlDots" class="dots" aria-hidden="true">
+      <span>.</span><span>.</span><span>.</span>
+    </span>
+    </div>
+
+    <div class="action-buttons">
+        <button type="submit">Preview</button>
+        <button type="button" id="downloadBtn">Download</button>
+        <button type="button" id="snapshotBtn">Take snapshot</button>
     </div>
 
 
-    <button type="submit">Preview</button>
-    <button type="button" id="downloadBtn">Download</button>
+    <!-- SNAPSHOT STATUS -->
+    <div id="snapStatus" class="banner" style="display:none;">
+        <span class="icon">📸</span>
+        <span id="snapText">Snapshot available</span>
+    </div>
+
+    <canvas id="snapCanvas" style="display:none;"></canvas>
 </form>
 
 <div style="margin-top: 16px;">
     <video id="v" controls style="width: 100%; max-width: 900px;"></video>
 </div>
-
-<script>
-    const form = document.getElementById("f");
-    const video = document.getElementById("v");
-    const downloadBtn = document.getElementById("downloadBtn");
-
-    const dlStatus = document.getElementById("dlStatus");
-    const dlText = document.getElementById("dlText");
-    const dlDots = document.querySelector(".dots");
-
-
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const params = new URLSearchParams(new FormData(form));
-        video.src = "/api/clip.mp4?" + params.toString();
-        video.load();
-        video.play().catch(() => {});
-    });
-
-    // DOWNLOAD
-    downloadBtn.addEventListener("click", async () => {
-        const params = new URLSearchParams(new FormData(form));
-        params.set("download", "true");
-
-        const url = "/api/clip.mp4?" + params.toString();
-
-        // UI: start
-        dlText.textContent = "Downloading";
-        dlDots.classList.remove("paused");
-        dlStatus.style.display = "block";
-        downloadBtn.disabled = true;
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error("HTTP " + response.status);
-            }
-
-            const blob = await response.blob();
-
-            const disposition = response.headers.get("Content-Disposition") || "";
-            const match = disposition.match(/filename="([^"]+)"/i);
-            const filename = match ? match[1] : "clip.mp4";
-
-            const objectUrl = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = objectUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(objectUrl);
-
-            dlText.textContent = "Download finished";
-            dlDots.classList.add("paused");
-            setTimeout(() => dlStatus.style.display = "none", 1500);
-
-        } catch (err) {
-            console.error(err);
-            dlText.textContent = "Download failed";
-            dlDots.classList.add("paused");
-            setTimeout(() => dlStatus.style.display = "none", 2500);
-        } finally {
-            downloadBtn.disabled = false;
-        }
-    });
-</script>
 
 </body>
 </html>
