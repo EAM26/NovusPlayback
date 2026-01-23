@@ -3,7 +3,7 @@ const video = document.getElementById("v");
 
 const downloadBtn = document.getElementById("downloadBtn");
 const snapshotBtn = document.getElementById("snapshotBtn");
-const forward10Btn = document.getElementById("forward10Btn");
+const forward10SecBtn = document.getElementById("forward10SecBtn");
 
 const dlStatus = document.getElementById("dlStatus");
 const dlText = document.getElementById("dlText");
@@ -46,33 +46,34 @@ form.addEventListener("submit", (e) => {
 });
 
 // Adjust Time buttons
-forward10Btn.addEventListener("click", async () => {
-    setStartTime(10);
-})
+// forward10Btn.addEventListener("click", async () => {
+//     setStartTime(10);
+// })
 
-function setStartTime(deltaTime) {
-    const form = document.getElementById('f');
-    const currentStartTime = new Date(
-        form.elements["date"].value + "T" + form.elements["time"].value
-    );
-    const shiftedStartTime =  calculateStartTime(currentStartTime, deltaTime);
-    // if(shiftedStartTime > new Date()) {return "Too late"}
-    form.elements["date"].value = shiftedStartTime[0];
-    form.elements["time"].value = shiftedStartTime[1];
+forward10SecBtn.addEventListener("click", () => shiftFormTimeBySeconds(10));
+
+function shiftFormTimeBySeconds(offsetSeconds) {
+    const dateStr = form.elements["date"].value;
+    const timeStr = form.elements["time"].value;
+
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const [hh = 0, mm = 0, ss = 0] = timeStr.split(":").map(Number);
+    const dt = new Date(y, m - 1, d, hh, mm, ss, 0);
+
+    if (Number.isNaN(dt.getTime())) return;
+
+    // Add time
+    dt.setSeconds(dt.getSeconds() + offsetSeconds);
+
+    // Check time is not if future, set to now
+    const now = new Date();
+    if (dt > now) dt.setTime(now.getTime());
+
+    const pad2 = (n) => String(n).padStart(2, "0");
+    form.elements["date"].value = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
+    form.elements["time"].value = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}:${pad2(dt.getSeconds())}`;
+    console.log(form.time);
     form.requestSubmit();
-}
-
-
-function calculateStartTime(dateIso, deltaTime) {
-    const offset = dateIso.getTimezoneOffset()
-    let dateCorrected = new Date(dateIso.getTime() - (offset * 60 * 1000) + (deltaTime * 1000));
-    if (dateCorrected > new Date()) {
-        console.log("Time not available. Set to now");
-        dateCorrected = new Date();
-    }
-    const date = dateCorrected.toISOString().split('T')[0];
-    const time = dateCorrected.toISOString().split('T')[1].substring(0, 8);
-    return [date, time];
 }
 
 // DOWNLOAD
