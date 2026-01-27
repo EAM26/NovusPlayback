@@ -29,6 +29,7 @@ public class ClipController {
 
     @GetMapping(value = "/api/clip.mp4", produces = "video/mp4")
     public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response) throws Exception {
+        System.out.println("Received clip request: " + request);
         String rtspUrl = rtspService.buildRtspUrl(request);
 
         boolean download = Boolean.TRUE.equals(request.download());
