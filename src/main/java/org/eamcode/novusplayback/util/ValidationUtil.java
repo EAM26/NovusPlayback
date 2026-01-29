@@ -9,7 +9,10 @@ public class ValidationUtil {
 
     public StringBuilder validationMessage(BindingResult br) {
         StringBuilder sb = new StringBuilder();
+        sb.append("Invalid request parameters:\n");
         for (FieldError fe : br.getFieldErrors()) {
+            sb.append(fe.getField());
+            sb.append(": ");
             sb.append(fe.getDefaultMessage());
             sb.append("\n");
         }
