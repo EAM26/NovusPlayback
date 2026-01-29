@@ -5,8 +5,11 @@ import jakarta.validation.Valid;
 import org.eamcode.novusplayback.dto.PlaybackRequest;
 import org.eamcode.novusplayback.service.RtspService;
 import org.eamcode.novusplayback.util.NovusTimeFormatter;
+import org.eamcode.novusplayback.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,14 +24,21 @@ import java.util.List;
 public class ClipController {
 
     private final RtspService rtspService;
+    private final ValidationUtil validationUtil;
     private static final Logger log = LoggerFactory.getLogger(ClipController.class);
 
-    public ClipController(RtspService rtspService) {
+    public ClipController(RtspService rtspService, ValidationUtil validationUtil) {
         this.rtspService = rtspService;
+        this.validationUtil = validationUtil;
     }
 
-    @GetMapping(value = "/api/clip.mp4", produces = "video/mp4")
-    public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response) throws Exception {
+    @GetMapping(value = "/api/clip.mp4")
+    public ResponseEntity<?> clipMp4(@Valid @ModelAttribute PlaybackRequest request, BindingResult bindingResult, HttpServletResponse response) throws Exception {
+        System.out.println("Received clip request: " + request);
+        if (bindingResult.hasErrors()) {
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request parameters");
+            return ResponseEntity.badRequest().body(validationUtil.validationMessage(bindingResult).toString());
+        }
         String rtspUrl = rtspService.buildRtspUrl(request);
 
         boolean download = Boolean.TRUE.equals(request.download());
@@ -58,6 +68,8 @@ public class ClipController {
         } finally {
             p.destroy();
         }
+
+        return ResponseEntity.ok().build();
     }
 
     private String makeFileName(PlaybackRequest request) {

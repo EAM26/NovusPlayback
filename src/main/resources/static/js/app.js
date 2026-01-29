@@ -54,8 +54,7 @@ form.addEventListener("submit", (e) => {
 
 });
 
-
-
+// Time adjust buttons
 forward10SecBtn.addEventListener("click", () => shiftFormTimeBySeconds(10));
 forward1MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(60));
 forward5MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(300));
@@ -80,17 +79,16 @@ function shiftFormTimeBySeconds(offsetSeconds) {
     // Add time
     dt.setSeconds(dt.getSeconds() + offsetSeconds);
 
-    // Check time is not if future, set to now
+    // Check time is not if future
     const now = new Date();
     if (dt < now) {
         const pad2 = (n) => String(n).padStart(2, "0");
         form.elements["date"].value = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
         form.elements["time"].value = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}:${pad2(dt.getSeconds())}`;
         // console.log(form.time);
-        if(throttleTime()) {
+        if (throttleTime()) {
             form.requestSubmit();
-        }
-        else {
+        } else {
             console.log("too fast");
         }
 

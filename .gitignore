@@ -36,3 +36,4 @@ build/
 ### Log ###
 /logs/novus-playback.log
 /logs/novus-playback.log.2026-01-21.0.gz
+/Dockerfile

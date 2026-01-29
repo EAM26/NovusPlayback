@@ -22,8 +22,8 @@ public class RtspService {
     public RtspService(
             @Value("${novus.host}") String host,
             @Value("${novus.port}") int port,
-            @Value("${NOVUS_USERNAME}") String username,
-            @Value("${NOVUS_PASSWORD}") String password
+            @Value("${novus.username}") String username,
+            @Value("${novus.password}") String password
     ) {
         this.host = host;
         this.port = port;
