@@ -7,6 +7,7 @@ import org.eamcode.novusplayback.service.RtspService;
 import org.eamcode.novusplayback.util.NovusTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +29,12 @@ public class ClipController {
     }
 
     @GetMapping(value = "/api/clip.mp4", produces = "video/mp4")
-    public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response) throws Exception {
+    public void clipMp4(@Valid @ModelAttribute PlaybackRequest request, HttpServletResponse response, BindingResult bindingResult) throws Exception {
         System.out.println("Received clip request: " + request);
+        if (bindingResult.hasErrors()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request parameters");
+            return;
+        }
         String rtspUrl = rtspService.buildRtspUrl(request);
 
         boolean download = Boolean.TRUE.equals(request.download());

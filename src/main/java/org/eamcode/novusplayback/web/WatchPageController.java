@@ -25,8 +25,19 @@ public class WatchPageController {
             @RequestParam(name = "streamType", required = false) String streamType,
             Model model
     ) {
-        System.out.println("Watch page request: camera=" + camera + ", date=" + date + ", time=" + time +
+        System.out.println("Received Watch page request: camera=" + camera + ", date=" + date + ", time=" + time +
                 ", timeLen=" + timeLen + ", streamType=" + streamType);
+//        Validation
+        if(camera != null && camera < 1) {
+            camera = null;
+        }
+        if(timeLen != null && timeLen < 1) {
+            timeLen = null;
+        }
+        if(streamType != null && !streamType.equals(StreamType.MAIN.toString())) {
+            streamType = null;
+        }
+
         WatchForm form = new WatchForm();
         form.setCamera(camera == null ? 1 : camera);
         form.setDate(date == null ? LocalDate.now() : date);
