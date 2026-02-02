@@ -3,11 +3,11 @@ const video = document.getElementById("v");
 
 const downloadBtn = document.getElementById("downloadBtn");
 const snapshotBtn = document.getElementById("snapshotBtn");
+const testBtn = document.getElementById("testBtn");
 
 const forward10SecBtn = document.getElementById("forward10SecBtn");
 const forward1MinBtn = document.getElementById("forward1MinBtn");
 const forward5MinBtn = document.getElementById("forward5MinBtn");
-const pauseBtn = document.getElementById("pauseBtn");
 const backward10SecBtn = document.getElementById("backward10SecBtn");
 const backward1MinBtn = document.getElementById("backward1MinBtn");
 const backward5MinBtn = document.getElementById("backward5MinBtn");
@@ -22,6 +22,8 @@ const snapText = document.getElementById("snapText");
 const canvas = document.getElementById("snapCanvas");
 const ctx = canvas.getContext("2d");
 let timeStartLastPreview = null;
+let previewIsBusy = false;
+
 
 function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
     textEl.textContent = text;
@@ -44,16 +46,32 @@ function showBanner(bannerEl, textEl, text, dotsEl, dotsRunning, autoHideMs) {
 }
 
 // PREVIEW
+
 form.addEventListener("submit", (e) => {
     e.preventDefault();
+    if (previewIsBusy) {
+        console.log("Preview is busy, stopping current preview first");
+        stopCurrentPreview();
+    }
+    previewIsBusy = true;
+
     const params = new URLSearchParams(new FormData(form));
     video.src = "/api/clip.mp4?" + params.toString();
     video.load();
-    video.play().catch(() => {
-    });
-    timeStartLastPreview = new Date();
 
+    video.play()
+        .catch(() => {})
+
+    timeStartLastPreview = new Date();
 });
+
+
+function stopCurrentPreview() {
+    console.log("Stopping current preview");
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+}
 
 // Time adjust buttons
 forward10SecBtn.addEventListener("click", () => shiftFormTimeBySeconds(10));
@@ -64,8 +82,7 @@ backward1MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(-60));
 backward5MinBtn.addEventListener("click", () => shiftFormTimeBySeconds(-300));
 
 function throttleTime() {
-    // return timeStartLastPreview.getTime() + 500 <= new Date();
-    if (!timeStartLastPreview) return true;
+   if (!timeStartLastPreview) return true;
     return timeStartLastPreview.getTime() + 500 <= Date.now();
 }
 
@@ -189,7 +206,11 @@ snapshotBtn.addEventListener("click", () => {
         showBanner(snapStatus, snapText, "Snapshot available", null, false, 1500);
 
     }, "image/png");
-
-//     FORWARD
-
 });
+
+// TEST BUTTON
+testBtn.addEventListener("click", () => {
+    console.log("Test button clicked!");
+    stopCurrentPreview();
+});
+
