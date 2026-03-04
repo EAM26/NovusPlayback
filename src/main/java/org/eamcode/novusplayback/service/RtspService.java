@@ -53,14 +53,18 @@ public class RtspService {
             int timeLen,
             String streamType
     ) {
-        return "rtsp://" +
+        String rtspUrl =  "rtsp://" +
                 encode(username) + ":" + encode(password) + "@" +
                 host + ":" + port +
                 "/chTD=" + camera +
                 "&date=" + date +
                 "&time=" + time +
                 "&timelen=" + timeLen +
-                "&streamType=" + streamType;
+                "&streamType=" + streamType +
+                "&action=backup";
+
+        System.out.println("Generated RTSP URL: " + rtspUrl);
+        return rtspUrl;
     }
 
     private String encode(String value) {
