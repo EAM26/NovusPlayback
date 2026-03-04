@@ -10,7 +10,7 @@
 </head>
 
 <body style="font-family: sans-serif; padding: 16px;">
-<h3>Playback MVP (browser)</h3>
+<h1>Novus Playback (beta)</h1>
 
 <form id="f">
     <label>
@@ -57,18 +57,21 @@
     </span>
     </div>
 
-    <div class="action-buttons">
-        <button type="submit">Preview</button>
-        <button type="button" id="downloadBtn">Download</button>
-        <button type="button" id="snapshotBtn">Take snapshot</button>
-        <button type="button" id="testBtn">Test button</button>
+    <div id="snapStatus" class="banner" style="display:none;">
+        <span class="icon">📸</span>
+        <span id="snapText">Snapshot available</span>
     </div>
 
 
     <!-- SNAPSHOT STATUS -->
-    <div id="snapStatus" class="banner" style="display:none;">
-        <span class="icon">📸</span>
-        <span id="snapText">Snapshot available</span>
+    <div class="action-buttons">
+        <button type="submit">Preview</button>
+        <button type="button" id="playBtn">Play</button>
+        <button type="button" id="pauseBtn">Pause</button>
+        <button type="button" id="stopBtn">Stop</button>
+        <button type="button" id="snapshotBtn">Take snapshot</button>
+
+        <!--        <button type="button" id="downloadBtn">Download</button>-->
     </div>
 
     <canvas id="snapCanvas" style="display:none;"></canvas>

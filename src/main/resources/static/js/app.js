@@ -1,9 +1,11 @@
 const form = document.getElementById("f");
 const video = document.getElementById("v");
 
-const downloadBtn = document.getElementById("downloadBtn");
+// const downloadBtn = document.getElementById("downloadBtn");
 const snapshotBtn = document.getElementById("snapshotBtn");
-const testBtn = document.getElementById("testBtn");
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const stopBtn = document.getElementById("stopBtn");
 
 const forward10SecBtn = document.getElementById("forward10SecBtn");
 const forward1MinBtn = document.getElementById("forward1MinBtn");
@@ -119,47 +121,47 @@ function shiftFormTimeBySeconds(offsetSeconds) {
 }
 
 // DOWNLOAD
-downloadBtn.addEventListener("click", async () => {
-    const params = new URLSearchParams(new FormData(form));
-    params.set("download", "true");
-
-    const url = "/api/clip.mp4?" + params.toString();
-
-    showBanner(dlStatus, dlText, "Downloading", dlDots, true, 0);
-    downloadBtn.disabled = true;
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
-
-        const blob = await response.blob();
-
-        const disposition = response.headers.get("Content-Disposition") || "";
-        const match = disposition.match(/filename="([^"]+)"/i);
-        const filename = match ? match[1] : "clip.mp4";
-
-        const objectUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = objectUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(objectUrl);
-
-        showBanner(dlStatus, dlText, "Download available", dlDots, false, 1500);
-
-    } catch (err) {
-        console.error(err);
-
-        showBanner(dlStatus, dlText, "Download failed", dlDots, false, 2500);
-
-    } finally {
-        downloadBtn.disabled = false;
-    }
-});
+// downloadBtn.addEventListener("click", async () => {
+//     const params = new URLSearchParams(new FormData(form));
+//     params.set("download", "true");
+//
+//     const url = "/api/clip.mp4?" + params.toString();
+//
+//     showBanner(dlStatus, dlText, "Downloading", dlDots, true, 0);
+//     downloadBtn.disabled = true;
+//
+//     try {
+//         const response = await fetch(url);
+//         if (!response.ok) {
+//             throw new Error("HTTP " + response.status);
+//         }
+//
+//         const blob = await response.blob();
+//
+//         const disposition = response.headers.get("Content-Disposition") || "";
+//         const match = disposition.match(/filename="([^"]+)"/i);
+//         const filename = match ? match[1] : "clip.mp4";
+//
+//         const objectUrl = URL.createObjectURL(blob);
+//         const a = document.createElement("a");
+//         a.href = objectUrl;
+//         a.download = filename;
+//         document.body.appendChild(a);
+//         a.click();
+//         a.remove();
+//         URL.revokeObjectURL(objectUrl);
+//
+//         showBanner(dlStatus, dlText, "Download available", dlDots, false, 1500);
+//
+//     } catch (err) {
+//         console.error(err);
+//
+//         showBanner(dlStatus, dlText, "Download failed", dlDots, false, 2500);
+//
+//     } finally {
+//         downloadBtn.disabled = false;
+//     }
+// });
 
 // SNAPSHOT
 snapshotBtn.addEventListener("click", () => {
@@ -209,8 +211,15 @@ snapshotBtn.addEventListener("click", () => {
 });
 
 // TEST BUTTON
-testBtn.addEventListener("click", () => {
-    console.log("Test button clicked!");
-    stopCurrentPreview();
+
+playBtn.addEventListener("click", () => {
+        video.play();
+
+});pauseBtn.addEventListener("click", () => {
+        video.pause();
+
+});stopBtn.addEventListener("click", () => {
+        stopCurrentPreview();
 });
+
 

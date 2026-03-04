@@ -1,98 +1,263 @@
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    border: 1px solid blue;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+    /*--page:#dbe7f2;       !* achtergrond pagina *!*/
+    /*--form:#f4f8fc;       !* formulier kaart *!*/
+    /*--input:#ffffff;      !* input velden *!*/
+    /*--page:#dfeee6;*/
+    /*--form:#edf7f1;*/
+    /*--input:#ffffff;*/
+    /*--page:#efe6da;*/
+    /*--form:#f8f2ea;*/
+    /*--input:#ffffff;*/
+    --page:#d7ecec;
+    --form:#eaf6f6;
+    --input:#ffffff;
+    --text:#1f2937;
+    --border:#6b7c8f;
+    --button:#e6edf5;
+    --button-hover:#d8e3ef;
+    --radius:10px;
+    --shadow:0 6px 16px rgba(0,0,0,.08);
 }
 
-body {
-    background-color: orange;
-    display: flex;
-    flex-direction: column;
+body{
+    background:var(--page);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    padding:20px;
+    color:var(--text);
+}
+
+h3{
+    margin-bottom:14px;
+    font-size:20px;
+    font-weight:700;
+}
+
+form{
+    background:var(--form);
+    border:2px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+    max-width:900px;
+}
+
+label{
+    display:grid;
+    grid-template-columns:160px 1fr;
+    align-items:center;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid #d1d5db;
+    font-weight:600;
+}
+
+label:last-of-type{
+    border-bottom:none;
+}
+
+input{
+    width:100%;
+    padding:9px 11px;
+    border:2px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--input);
+    font-size:14px;
+}
+
+input:focus{
+    outline:none;
+    border-color:#4b5563;
+    background:white;
+}
+
+.time-row{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    padding:10px 0;
+}
+
+.time-shift{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.action-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:14px;
 }
 
 button{
-    padding: 5px;
-    border-radius: 5px;
-    margin-right: 2px;
+    padding:9px 12px;
+    border:2px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--button);
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:background .15s,border-color .15s;
 }
 
-input {
-    padding: 2px;
+button:hover{
+    background:var(--button-hover);
+    border-color:#6b7280;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    align-self: flex-start;
-
+button:active{
+    transform:translateY(1px);
 }
 
-.time-shift {
-    display: flex;
-    /*justify-content: space-between;*/
-}
-.time-row {
-    display: flex;
-    gap: 5px;
-}
-
-.banner {
-    margin-top: 12px;
-    padding: 10px 14px;
-    border-radius: 6px;
-
-    background-color: #e7f1ff;
-    color: #0b3d91;
-
-    font-weight: 600;
-    font-size: 1.05rem;
-
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.banner{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:var(--radius);
+    border:2px solid var(--border);
+    background:#eef2f7;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
 }
 
-.banner .icon {
-    font-size: 1.2rem;
+.banner .icon{
+    font-size:1.1rem;
 }
 
-.dots {
-    display: inline-flex;
-    gap: 2px;
-    margin-left: 2px;
+.dots{
+    display:inline-flex;
+    gap:2px;
+    margin-left:2px;
 }
 
-.dots span {
-    opacity: 0.2;
-    animation: blink 1s infinite;
+.dots span{
+    opacity:.25;
+    animation:blink 1s infinite;
 }
 
-.dots span:nth-child(2) {
-    animation-delay: 0.2s;
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+
+@keyframes blink{
+    0%,20%{opacity:.25;}
+    50%{opacity:1;}
+    100%{opacity:.25;}
 }
 
-.dots span:nth-child(3) {
-    animation-delay: 0.4s;
+video{
+    display:block;
+    margin-top:16px;
+    width:100%;
+    max-width:900px;
+    border:2px solid var(--border);
+    border-radius:var(--radius);
+    background:black;
 }
 
-@keyframes blink {
-    0%, 20% {
-        opacity: 0.2;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0.2;
+@media (max-width:640px){
+    label{
+        grid-template-columns:1fr;
     }
 }
+/**,*/
+/**::before,*/
+/**::after {*/
+/*    box-sizing: border-box;*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    !*border: 1px solid blue;*!*/
+/*}*/
 
-.dots.paused span {
-    animation: none;
-    opacity: 0.2;
-}
+/*body {*/
+/*    background-color: orange;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+
+/*button{*/
+/*    padding: 5px;*/
+/*    border-radius: 5px;*/
+/*    margin-right: 2px;*/
+/*}*/
+
+/*input {*/
+/*    padding: 2px;*/
+/*}*/
+
+/*form {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-self: flex-start;*/
+
+/*}*/
+
+/*.time-shift {*/
+/*    display: flex;*/
+/*    !*justify-content: space-between;*!*/
+/*}*/
+/*.time-row {*/
+/*    display: flex;*/
+/*    gap: 5px;*/
+/*}*/
+
+/*.banner {*/
+/*    margin-top: 12px;*/
+/*    padding: 10px 14px;*/
+/*    border-radius: 6px;*/
+
+/*    background-color: #e7f1ff;*/
+/*    color: #0b3d91;*/
+
+/*    font-weight: 600;*/
+/*    font-size: 1.05rem;*/
+
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 6px;*/
+
+/*    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);*/
+/*}*/
+
+/*.banner .icon {*/
+/*    font-size: 1.2rem;*/
+/*}*/
+
+/*.dots {*/
+/*    display: inline-flex;*/
+/*    gap: 2px;*/
+/*    margin-left: 2px;*/
+/*}*/
+
+/*.dots span {*/
+/*    opacity: 0.2;*/
+/*    animation: blink 1s infinite;*/
+/*}*/
+
+/*.dots span:nth-child(2) {*/
+/*    animation-delay: 0.2s;*/
+/*}*/
+
+/*.dots span:nth-child(3) {*/
+/*    animation-delay: 0.4s;*/
+/*}*/
+
+/*@keyframes blink {*/
+/*    0%, 20% {*/
+/*        opacity: 0.2;*/
+/*    }*/
+/*    50% {*/
+/*        opacity: 1;*/
+/*    }*/
+/*    100% {*/
+/*        opacity: 0.2;*/
+/*    }*/
+/*}*/
+
+/*.dots.paused span {*/
+/*    animation: none;*/
+/*    opacity: 0.2;*/
+/*}*/
