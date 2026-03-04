@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.eamcode</groupId>
     <artifactId>NovusPlayback</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-beta.1</version>
     <name>NovusPlayback</name>
     <description>NovusPlayback</description>
     <url/>
