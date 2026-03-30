@@ -41,7 +41,7 @@ public class WatchPageController {
         WatchForm form = new WatchForm();
         form.setCamera(camera == null ? 1 : camera);
         form.setDate(date == null ? LocalDate.now() : date);
-        form.setTime(time == null ? LocalTime.now().withNano(0) : time.withNano(0));
+        form.setTime(time == null ? LocalTime.now().withNano(0).minusSeconds(300) : time.withNano(0));
         form.setTimeLen(timeLen == null ? 60 : timeLen);
 
         String st = (streamType == null ? StreamType.MAIN.toString() : streamType)
